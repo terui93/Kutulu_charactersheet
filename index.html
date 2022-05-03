@@ -59,8 +59,8 @@
         </div>
         <h2>備考</h2>
         <textarea v-model="script" class="chara_script"></textarea>
-        <button @click="editChara" v-if="selected_id != 0">保存</button>
-        <button @click="createNewChara" v-if="selected_id == 0">新規作成</button>
+        <button @click="" v-if="selected_id != 0">保存</button>
+        <button @click="" v-if="selected_id == 0">新規作成</button>
         キャラクター選択：
         <select v-on:change="getChara" v-model="selected_id">
             <option v-for="(chara, index) in charas" :key="index" :value="chara.id">{{chara.id}}：{{chara.name}}</option>
