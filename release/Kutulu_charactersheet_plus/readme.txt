@@ -20,4 +20,5 @@
 ※再度キャラシを開く場合は④と⑤を再度行ってください。
 
 注）init.bat・init2.bat・run.batはすべてWindows対応となっています。
-　　Macをご利用の方はお手数ですが、「node express mac」などで検索して、expressのインストール方法をお調べください。
+　　Macをご利用の方はお手数ですが、下記リンクの「Expressをセットアップする」からご参照ください。
+　　https://qiita.com/nkjm/items/723990c518acfee6e473

@@ -30,7 +30,7 @@ div.right-column {
     width: max(50%,250px);
 }
 #app, div.status_base {
-    width: max(40vw, 520px);
+    width: max(45vw, 700px);
 }
 .skill_point, .specialty_point {
     display: flex;
