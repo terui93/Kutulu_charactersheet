@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Kutulu CharacterSheet</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="./js/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+<body>
+    <header>
+        <img src="./img/logo.png" class="logo" />
+    </header>
+    <div class="main" id="app">
+        <div class="status_base">
+            <h2>個人情報</h2>
+            <div class="player_name">プレイヤー名：<input type="text" class="player_name" v-model="player_name"></div>
+<p></p>
+	<div class="left-column">
+		<div class="chara_name">キャラクター名：<input type="text" class="chara_name" v-model="name"></div>
+	</div>
+	<div class="left-column">
+		<div class="chara_title">称号 / 肩書：<input type="text" class="chara_title" v-model="title"></div>
+	</div>
+
+
+
+        <div class="left-column">
+<p></p>
+<div class="skill_point">能力値：<div class="now_skill_point">{{this.skill_total}}</div>/<div class="limit_skill_point">{{this.skill_limit}}</div></div> 
+<p></p>
+           <h2>能力値</h2>
+            <ul v-for="(skill, index) in skills" :key="index">
+                <div :class="skill.skill">
+                    {{ skill.name }}
+                    <input type="radio" v-for="(point, index) in skill_point" class="skill" :name="skill.skill" :value="point.value" :id="'skill_' + skill.id + '_' + point.value" v-on:click="setSkillPoint(point.value,skill.id - 1)" v-model="skill.value">
+                    {{skill.value}}
+                </div>
+            </ul>
+            <h2>負傷</h2>
+            <ul>
+                <input type="checkbox" v-for="(damage, index) in damages" class="damage" :value="damage.value" v-model="damage.checked">
+            </ul>
+        </div>
+        <div class="right-column">
+<p></p>
+<div class="specialty_point">専門分野：<div class="now_specialty_point">{{this.specialty_total}}</div>/<div class="limit_specialty_point">{{this.specialty_limit}}</div></div>
+<p></p>
+            <h2>専門分野</h2>
+            <ul v-for="(specialty, index) in specialties" :key="index">
+                <div :class="specialty.skill">
+                    {{ specialty.name }}
+                    <input type="radio" v-for="(point, index) in specialty_point" class="specialty" :name="specialty.skill" :value="point.value" :id="'specialty_' + specialty.id + '_' + point.value" v-on:click="setSpecialtyPoint(point.value,specialty.id - 1)" v-model="specialty.value">
+                    {{ specialty.value }}
+                </div>
+            </ul>
+        </div>
+        <h2>備考</h2>
+        <textarea v-model="script" class="chara_script"></textarea>
+        <button @click="editChara" v-if="selected_id != 0">保存</button>
+        <button @click="createNewChara" v-if="selected_id == 0">新規作成</button>
+        キャラクター選択：
+        <select v-on:change="getChara" v-model="selected_id">
+            <option v-for="(chara, index) in charas" :key="index" :value="chara.id">{{chara.id}}：{{chara.name}}</option>
+        </select>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                name: '',
+                title: '',
+                player_name: '',
+                skills: [
+                    {
+                        id: 1,
+                        skill: 'fame',
+                        name: '名声',
+                        value: 0,
+                        checked: false,
+                    },
+                    {
+                        id: 2,
+                        skill: 'speech',
+                        name: '弁舌',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 3,
+                        skill: 'credit',
+                        name: '信用',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 4,
+                        skill: 'family_status',
+                        name: '家格',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 5,
+                        skill: 'shooting',
+                        name: '射撃',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 6,
+                        skill: 'combat',
+                        name: '白兵',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 7,
+                        skill: 'covert',
+                        name: '隠密',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 8,
+                        skill: 'agile',
+                        name: '敏捷',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 9,
+                        skill: 'strength',
+                        name: '筋力',
+                        value: 0,
+                        checked: false
+                    },
+                ],
+                specialties: [
+                    {
+                        id: 1,
+                        skill: 'folklore',
+                        name: '人類学&民俗学',
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 2,
+                        skill: 'archeology',
+                        name: "考古学&歴史学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 3,
+                        skill: 'palaeography',
+                        name: "図書館&古文書学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 4,
+                        skill: 'economics',
+                        name: "経済学&法学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 5,
+                        skill: 'arts',
+                        name: "芸術&工芸",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 6,
+                        skill: 'criminology',
+                        name: "犯罪学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 7,
+                        skill: 'medicine',
+                        name: "医学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 8,
+                        skill: 'engineering',
+                        name: "機械工学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 9,
+                        skill: 'natural_science',
+                        name: "自然科学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 10,
+                        skill: 'occult',
+                        name: "オカルト",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 11,
+                        skill: 'psychology',
+                        name: "心理学",
+                        value: 0,
+                        checked: false
+                    },
+                    {
+                        id: 12,
+                        skill: 'linguistics',
+                        name: "言語学",
+                        value: 0,
+                        checked: false
+                    }
+                ],
+                skill_point: [
+                    {
+                        value: 1
+                    },
+                    {
+                        value: 2
+                    },
+                    {
+                        value: 3
+                    },
+                    {
+                        value: 4
+                    }
+                ],
+                specialty_point: [
+                    {
+                        value: 1
+                    },
+                    {
+                        value: 2
+                    },
+                    {
+                        value: 3
+                    }
+                ],
+                damages: [
+                    {
+                        value: 1,
+                        checked: false
+                    },
+                    {
+                        value: 2,
+                        checked: false
+                    },
+                    {
+                        value: 3,
+                        checked: false
+                    }
+                ],
+                skill_total: 0,
+                skill_limit: 13,
+                specialty_total: 0,
+                specialty_limit: 10,
+                script: '',
+                charas: [
+                    {
+                        id: 0,
+                        name: '新規'
+                    }
+                ],
+                selected_id: 0,
+                new_id: 1,
+            },
+
+            mounted: function() {
+                this.getAllCharas();
+            },
+            
+            methods: {
+                setSkillPoint: function(value, index) {
+                    if (value == this.skills[index].value || !this.skills[index].checked) {
+                        this.skills[index].checked = !this.skills[index].checked;
+                    }
+                    if (this.skills[index].checked) {
+                        this.skill_total -= this.skills[index].value;
+                        this.skills[index].value = value;
+                        this.skill_total += this.skills[index].value;
+                    } else {
+                        this.skill_total -= this.skills[index].value;
+                        this.skills[index].value = 0;
+                    }
+                    if (this.skill_limit < this.skill_total) {
+                        $('.skill_point').css('color', 'red');
+                    } else {
+                        $('.skill_point').css('color', 'black');
+                    }
+                },
+                setSpecialtyPoint: function(value, index) {
+                    if (value == this.specialties[index].value || !this.specialties[index].checked) {
+                        this.specialties[index].checked = !this.specialties[index].checked;
+                    }
+                    if (this.specialties[index].checked) {
+                        this.specialty_total -= this.specialties[index].value;
+                        this.specialties[index].value = value;
+                        this.specialty_total += this.specialties[index].value;
+                    } else {
+                        this.specialty_total -= this.specialties[index].value;
+                        this.specialties[index].value = 0;
+                    }
+                    if (this.specialty_limit < this.specialty_total) {
+                        $('.specialty_point').css('color', 'red');
+                    } else {
+                        $('.specialty_point').css('color', 'black');
+                    }
+                },
+                createNewChara: function() {
+                    if (this.name == '') {
+                        alert('!!!名前は必ず入力してください!!!');
+                        return false;
+                    }
+                    let originalData = {
+                        id: this.new_id,
+                        name: this.name,
+                        title: this.title,
+                        player_name: this.player_name,
+                        skill_total: this.skill_total,
+                        specialty_total: this.specialty_total,
+                        script: this.script,
+                        skills: [],
+                        specialties: [],
+                        damages: []
+                    }
+
+                    const charasData = {
+                        id: this.new_id,
+                        name: this.name
+                    }
+
+                    let skills = [];
+                    let specialties = [];
+                    let damages = [];
+
+                    for (i=0;i<this.skills.length;i++){
+                        let skill_data = {
+                            id: i + 1,
+                            value: this.skills[i].value,
+                            checked: this.skills[i].checked
+                        }
+                        skills.push(skill_data);
+                    }
+
+                    for (i=0;i<this.specialties.length;i++) {
+                        let speciality_data = {
+                            id: i + 1,
+                            value: this.specialties[i].value,
+                            checked: this.specialties[i].checked
+                        }
+                        specialties.push(speciality_data);
+                    }
+
+                    for (i=0;i<this.damages.length;i++) {
+                        let damage_data = {
+                            value: this.damages[i].value,
+                            checked: this.damages[i].checked
+                        }
+                        damages.push(damage_data);
+                    }
+
+                    originalData.skills = skills;
+                    originalData.specialties = specialties;
+                    originalData.damages = damages;
+
+                    axios.post('/api/new', {
+                        data: originalData
+                    });
+                    this.charas.push(charasData);
+                    this.selected_id = this.new_id;
+                    this.new_id += 1;
+                },
+                editChara: function() {
+                    if (this.name == '') {
+                        alert('!!!名前は必ず入力してください!!!');
+                        return false;
+                    }
+                    let originalData = {
+                        id: this.selected_id,
+                        name: this.name,
+                        title: this.title,
+                        player_name: this.player_name,
+                        skill_total: this.skill_total,
+                        specialty_total: this.specialty_total,
+                        script: this.script,
+                        skills: [],
+                        specialties: [],
+                        damages: []
+                    }
+
+                    const charasData = {
+                        id: this.new_id,
+                        name: this.name
+                    }
+
+                    let skills = [];
+                    let specialties = [];
+                    let damages = [];
+
+                    for (i=0;i<this.skills.length;i++){
+                        let skill_data = {
+                            id: i + 1,
+                            value: this.skills[i].value,
+                            checked: this.skills[i].checked
+                        }
+                        skills.push(skill_data);
+                    }
+
+                    for (i=0;i<this.specialties.length;i++) {
+                        let speciality_data = {
+                            id: i + 1,
+                            value: this.specialties[i].value,
+                            checked: this.specialties[i].checked
+                        }
+                        specialties.push(speciality_data);
+                    }
+
+                    for (i=0;i<this.damages.length;i++) {
+                        let damage_data = {
+                            value: this.damages[i].value,
+                            checked: this.damages[i].checked
+                        }
+                        damages.push(damage_data);
+                    }
+
+                    originalData.skills = skills;
+                    originalData.specialties = specialties;
+                    originalData.damages = damages;
+
+                    axios.post('/api/edit/' + this.selected_id, {
+                        data: originalData
+                    });
+                },
+                getAllCharas: function() {
+                    axios.get('/api/read_all')
+                        .then(function (response) {
+                            var data = response.data;
+                            for (i=0;i<data.length;i++) {
+                                app.charas.push(data[i]);
+                                app.new_id += 1;
+                            }
+                        });
+                },
+                getChara: function() {
+                    if (this.selected_id == 0){
+                        app.name = '';
+                        app.title = '';
+                        app.player_name = '';
+                        app.skill_total = 0;
+                        app.specialty_total = 0;
+                        app.script = '';
+
+                        for (i=0;i<app.skills.length;i++) {
+                            app.skills[i].value = 0;
+                            app.skills[i].checked = false;
+                        }
+
+                        for (i=0;i<app.specialties.length;i++) {
+                            app.specialties[i].value = 0;
+                            app.specialties[i].checked = false;
+                        }
+
+                        for (i=0;i<app.damages.length;i++) {
+                            app.damages[i].checked = false;
+                        }
+                        return false;
+                    }
+                    axios.get('/api/read/' + app.selected_id)
+                        .then(function(response) {
+                            var data = response.data;
+                            app.name = data.name;
+                            app.title = data.title;
+                            app.player_name = data.player_name;
+                            app.skill_total = data.skill_total;
+                            app.specialty_total = data.specialty_total;
+                            app.script = data.script;
+
+                            for (i=0;i<app.skills.length;i++) {
+                                app.skills[i].value = data.skills[i].value;
+                                app.skills[i].checked = data.skills[i].checked
+                            }
+
+                            for (i=0;i<app.specialties.length;i++) {
+                                app.specialties[i].value = data.specialties[i].value;
+                                app.specialties[i].checked = data.specialties[i].checked;
+                            }
+
+                            for (i=0;i<app.damages.length;i++) {
+                                app.damages[i].value = data.damages[i].value;
+                                app.damages[i].checked = data.damages[i].checked;
+                            }
+
+                            if (app.skill_limit < app.skill_total) {
+                                $('.skill_point').css('color', 'red');
+                            } else {
+                                $('.skill_point').css('color', 'black');
+                            }
+
+                            if (app.specialty_limit < app.specialty_total) {
+                                $('.specialty_point').css('color', 'red');
+                            } else {
+                                $('.specialty_point').css('color', 'black');
+                            }
+                        })
+                },
+
+            },
+        });
+      </script>
+</body>
+</html>
