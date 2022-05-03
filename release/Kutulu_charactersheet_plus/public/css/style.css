@@ -1,0 +1,48 @@
+body {
+    background-color: white;
+}
+header {
+    height: 20vh;
+    z-index: 10;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+header img {
+    position: absolute;
+    width: auto;
+    height: 80%;
+    z-index: 15;
+    left: 50%;
+    transform: translate(-50%);
+}
+div.main {
+    margin: 0 auto;
+}
+div.status_base input {
+    border-top: none;
+    border-right: none;
+    border-left: none;
+}
+div.left-column {
+    float: left;
+    width: max(50%, 230px);
+}
+div.right-column {
+    float: right;
+    width: max(50%,250px);
+}
+#app, div.status_base {
+    width: max(45vw, 700px);
+}
+.skill_point, .specialty_point {
+    display: flex;
+}
+.chara_script {
+    width: 100%;
+    line-height: 20px;
+    min-height: 40px;
+}
+p {
+    font-size: 12px;
+}
