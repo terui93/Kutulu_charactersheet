@@ -20,5 +20,4 @@
 ※再度キャラシを開く場合は④と⑤を再度行ってください。
 
 注）init.bat・init2.bat・run.batはすべてWindows対応となっています。
-　　Macをご利用の方はお手数ですが、下記リンクの「Expressをセットアップする」からご参照ください。
-　　https://qiita.com/nkjm/items/723990c518acfee6e473
+　　Macをご利用の方はお手数ですが、これらの拡張子を「.command」に変更して実行してください。

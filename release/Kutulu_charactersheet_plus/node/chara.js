@@ -3,7 +3,7 @@ const fs = require("fs");
 const read_all = function(res) {
     fs.readFile("./node/db.json","utf8", function(err, data) {
         const charas =  JSON.parse(data).charas;
-        const charas_list = []
+        let charas_list = []
 
         for (i=0;i<charas.length;i++) {
             charas_list.push({id: charas[i].id, name: charas[i].name})
