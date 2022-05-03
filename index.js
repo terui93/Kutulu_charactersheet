@@ -26,5 +26,5 @@ app.post('/api/new', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`ポート${port}番に狂気が訪れました`)
+  console.log(`ポート${port}番に狂気が訪れました。`)
 })
