@@ -34,7 +34,6 @@ const creat = function(charadata) {
     fs.readFile("./node/db.json","utf8", function(err, data) {
         let charas =  JSON.parse(data);
         charas.charas.push(charadata);
-        console.log(charas);
         fs.writeFile("./node/db.json", JSON.stringify(charas), function() {
             console.log("saved");
         });

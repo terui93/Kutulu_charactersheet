@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kutulu CharacterSheet</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="./js/common.js"></script>
@@ -61,8 +61,9 @@
         <textarea v-model="script" class="chara_script"></textarea>
         <button @click="editChara" v-if="selected_id != 0">保存</button>
         <button @click="createNewChara" v-if="selected_id == 0">新規作成</button>
+        キャラクター選択：
         <select v-on:change="getChara" v-model="selected_id">
-            <option v-for="(chara, index) in charas" :key="index" :value="chara.id">{{chara.name}}</option>
+            <option v-for="(chara, index) in charas" :key="index" :value="chara.id">{{chara.id}}：{{chara.name}}</option>
         </select>
     </div>
     <script>
