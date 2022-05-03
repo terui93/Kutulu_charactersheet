@@ -9,6 +9,10 @@ app.use(express.json())
 
 const {read_all, read, edit, creat} = require('./node/chara')
 
+app.get('/', (req, res) => {
+    res.redirect('/index.html')
+})
+
 app.get('/api/read_all', (req, res) => {
     read_all(res)
 })
