@@ -4,7 +4,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.urlencoded({ extended: false }))
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.static(path.join(__dirname, "docs")))
 app.use(express.json())
 
 const {read_all, read, edit, creat} = require('./node/chara')
